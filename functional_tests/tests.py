@@ -54,6 +54,8 @@ class NewVisitorTest(LiveServerTestCase):
         # "1: Buy peacock feathers" as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
 
+        # @TODO remove the sleep
+        time.sleep(1)
         table = self.browser.find_element(By.ID, "id_list_table")
         rows = table.find_elements(By.TAG_NAME, "tr")
         self.wait_for_row_in_list_table("1: Buy peacock feathers")
