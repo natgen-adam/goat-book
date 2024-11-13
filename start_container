@@ -1,8 +1,0 @@
-podman build -t superlists . \
-&& podman run \
---privileged \
--p 8888:8888 \
---mount type=bind,source=./src/db.sqlite3,target=/src/db.sqlite3 \
--e DJANGO_SECRET_KEY= \
--e DJANGO_ALLOWED_HOST=localhost \
--it superlists
