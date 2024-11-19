@@ -14,7 +14,7 @@ from unittest import skip
 MAX_WAIT = 5
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
         test_server = os.environ.get("TEST_SERVER")
@@ -37,6 +37,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
                     raise
                 time.sleep(0.5)
 
+class NewVisitorTest(FunctionalTest):
     def test_can_start_a_todo_list(self):
         # Edith has heard about a cool new online to-do app.
         # She goes to check out its homepage
@@ -118,6 +119,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertNotIn("Buy peacock feathers", page_text)
         self.assertIn("Buy milk", page_text)
 
+class LayoutAndStylingTest(FunctionalTest):
     def test_layout_and_styling(self):
         # Edith goes to the home page,
         self.browser.get(self.live_server_url)
@@ -145,6 +147,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
             delta=10,
         )
 
+class ItemValidationTest(FunctionalTest):
     @skip
     def test_cannot_add_empty_list_items(self):
         # Edith goes to the home page and accidentally tries to submit
