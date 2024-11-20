@@ -1,7 +1,13 @@
 from django.test import TestCase
 from django.utils.html import escape
 from lists.models import Item, List
-from lists.forms import ItemForm, EMPTY_ITEM_ERROR
+from lists.forms import (
+    ItemForm,
+    EMPTY_ITEM_ERROR,
+    DUPLICATE_ITEM_ERROR,
+    ExistingListItemForm,
+)
+from unittest import skip
 
 
 class HomePageTest(TestCase):
@@ -82,15 +88,29 @@ class ListViewTest(TestCase):
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_input()
-        self.assertIsInstance(response.context["form"], ItemForm)
+        self.assertIsInstance(response.context["form"], ExistingListItemForm)
 
     def test_for_invalid_input_shows_error_on_page(self):
         response = self.post_invalid_input()
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
 
+    def test_duplicate_item_validation_errors_end_up_on_lists_page(self):
+        list1 = List.objects.create()
+        Item.objects.create(list=list1, text="textey")
+        response = self.client.post(
+            f"/lists/{list1.id}/",
+            data={"text": "textey"},
+        )
+
+        expected_error = escape(DUPLICATE_ITEM_ERROR)
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, "list.html")
+        self.assertEqual(Item.objects.all().count(), 1)
+
     def test_displays_item_form(self):
         mylist = List.objects.create()
         response = self.client.get(f"/lists/{mylist.id}/")
+        self.assertIsInstance(response.context["form"], ExistingListItemForm)
         self.assertContains(response, 'name="text"')
 
 
