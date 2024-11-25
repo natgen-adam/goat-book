@@ -1,5 +1,6 @@
 from unittest import mock
 from django.test import TestCase
+from django.contrib import auth
 
 import accounts.views
 from accounts.models import Token
@@ -60,3 +61,25 @@ class LoginViewTest(TestCase):
         expected_url = f"http://testserver/accounts/login?token={token.uid}"
         (subject, body, from_email, to_list), kwargs = mock_send_mail.call_args
         self.assertIn(expected_url, body)
+
+    def test_logs_in_if_given_a_valid_token(self):
+        anon_user = auth.get_user(self.client)
+        self.assertEqual(anon_user.is_authenticated, False)
+
+        token = Token.objects.create(email="edith@example.com")
+        self.client.get(f"/accounts/login?token={token.uid}")
+
+        user = auth.get_user(self.client)
+        self.assertEqual(user.is_authenticated, True)
+        self.assertEqual(user.email, "edith@example.com")
+
+    def test_shows_login_error_if_token_invalid(self):
+        response = self.client.get("/accounts/login?token=invalid-token", follow=True)
+        user = auth.get_user(self.client)
+        self.assertEqual(user.is_authenticated, False)
+        message = list(response.context["messages"])[0]
+        self.assertEqual(
+            message.message,
+            "Invalid login link, please request a new one",
+        )
+        self.assertEqual(message.tags, "error")
