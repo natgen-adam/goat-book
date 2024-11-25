@@ -62,7 +62,7 @@ class LoginViewTest(TestCase):
         (subject, body, from_email, to_list), kwargs = mock_send_mail.call_args
         self.assertIn(expected_url, body)
 
-    def DONT_test_logs_in_if_given_a_valid_token(self):
+    def test_logs_in_if_given_a_valid_token(self):
         anon_user = auth.get_user(self.client)
         self.assertEqual(anon_user.is_authenticated, False)
 
@@ -73,7 +73,7 @@ class LoginViewTest(TestCase):
         self.assertEqual(user.is_authenticated, True)
         self.assertEqual(user.email, "edith@example.com")
 
-    def DONTtest_shows_login_error_if_token_invalid(self):
+    def test_shows_login_error_if_token_invalid(self):
         response = self.client.get("/accounts/login?token=invalid-token", follow=True)
         user = auth.get_user(self.client)
         self.assertEqual(user.is_authenticated, False)
