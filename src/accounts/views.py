@@ -25,9 +25,7 @@ def send_login_email(request):
     return redirect("/")
 
 def login(request):
-    if Token.objects.filter(uid=request.GET["token"]).exists():
-        User = auth.get_user_model()
-        user = User.objects.create(email="edith@example.com")
+    if user := auth.authenticate(uid=request.GET["token"]):
         auth.login(request, user)
     else:
         messages.error(request, "Invalid login link, please request a new one")
