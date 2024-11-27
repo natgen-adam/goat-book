@@ -6,3 +6,5 @@ __pycache__
 src/db.sqlite3
 src/static
 start_container
+.env
+set_source.sh
