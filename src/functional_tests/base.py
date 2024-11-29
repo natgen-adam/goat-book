@@ -37,15 +37,9 @@ class FunctionalTest(StaticLiveServerTestCase):
                 rows = self.browser.find_elements(By.CSS_SELECTOR, "#id_list_table tr")
                 self.assertIn(row_text, [row.text for row in rows])
 
+    @wait
     def wait_for(self, fn):
-        start_time = time.time()
-        while True:
-            try:
-                return fn()
-            except (AssertionError, WebDriverException):
-                if time.time() - start_time > MAX_WAIT:
-                    raise
-                time.sleep(0.5)
+        return fn()
 
     def get_item_input_box(self):
         return self.browser.find_element(By.ID, "id_text")
